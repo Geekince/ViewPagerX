@@ -1,0 +1,3 @@
+include ':viewpagerx'
+include ':app'
+rootProject.name = "ViewPagerX"
