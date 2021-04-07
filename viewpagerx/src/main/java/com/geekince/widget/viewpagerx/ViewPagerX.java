@@ -56,6 +56,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.view.AbsSavedState;
+import androidx.viewpager.widget.PagerAdapter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -105,13 +106,16 @@ import java.util.List;
  * <p>You can find examples of using ViewPager in the API 4+ Support Demos and API 13+ Support Demos
  * sample code.
  */
-public class ViewPager extends ViewGroup {
+public class ViewPagerX extends ViewGroup {
     private static final String TAG = "ViewPager";
     private static final boolean DEBUG = false;
 
     private static final boolean USE_CACHE = false;
 
-    private static final int DEFAULT_OFFSCREEN_PAGES = 1;
+    /*
+     * 修改1
+     */
+    private static final int DEFAULT_OFFSCREEN_PAGES = 0;
     private static final int MAX_SETTLE_DURATION = 600; // ms
     private static final int MIN_DISTANCE_FOR_FLING = 25; // dips
 
@@ -119,8 +123,8 @@ public class ViewPager extends ViewGroup {
 
     private static final int MIN_FLING_VELOCITY = 400; // dips
 
-    static final int[] LAYOUT_ATTRS = new int[] {
-        android.R.attr.layout_gravity
+    static final int[] LAYOUT_ATTRS = new int[]{
+            android.R.attr.layout_gravity
     };
 
     /**
@@ -137,7 +141,7 @@ public class ViewPager extends ViewGroup {
         float offset;
     }
 
-    private static final Comparator<ItemInfo> COMPARATOR = new Comparator<ItemInfo>(){
+    private static final Comparator<ItemInfo> COMPARATOR = new Comparator<ItemInfo>() {
         @Override
         public int compare(ItemInfo lhs, ItemInfo rhs) {
             return lhs.position - rhs.position;
@@ -285,9 +289,9 @@ public class ViewPager extends ViewGroup {
          * This method will be invoked when the current page is scrolled, either as part
          * of a programmatically initiated smooth scroll or a user initiated touch scroll.
          *
-         * @param position Position index of the first page currently being displayed.
-         *                 Page position+1 will be visible if positionOffset is nonzero.
-         * @param positionOffset Value from [0, 1) indicating the offset from the page at position.
+         * @param position             Position index of the first page currently being displayed.
+         *                             Page position+1 will be visible if positionOffset is nonzero.
+         * @param positionOffset       Value from [0, 1) indicating the offset from the page at position.
          * @param positionOffsetPixels Value in pixels indicating the offset from position.
          */
         void onPageScrolled(int position, float positionOffset, @Px int positionOffsetPixels);
@@ -306,9 +310,9 @@ public class ViewPager extends ViewGroup {
          * or when it is fully stopped/idle.
          *
          * @param state The new scroll state.
-         * @see ViewPager#SCROLL_STATE_IDLE
-         * @see ViewPager#SCROLL_STATE_DRAGGING
-         * @see ViewPager#SCROLL_STATE_SETTLING
+         * @see ViewPagerX#SCROLL_STATE_IDLE
+         * @see ViewPagerX#SCROLL_STATE_DRAGGING
+         * @see ViewPagerX#SCROLL_STATE_SETTLING
          */
         void onPageScrollStateChanged(int state);
     }
@@ -348,7 +352,7 @@ public class ViewPager extends ViewGroup {
         /**
          * Apply a property transformation to the given page.
          *
-         * @param page Apply the transformation to this page
+         * @param page     Apply the transformation to this page
          * @param position Position of page relative to the current front-and-center
          *                 position of the pager. 0 is front and center. 1 is one full
          *                 page position to the right, and -1 is one page position to the left.
@@ -367,8 +371,8 @@ public class ViewPager extends ViewGroup {
          * @param oldAdapter the previously set adapter
          * @param newAdapter the newly set adapter
          */
-        void onAdapterChanged(@NonNull ViewPager viewPager,
-                @Nullable PagerAdapter oldAdapter, @Nullable PagerAdapter newAdapter);
+        void onAdapterChanged(@NonNull ViewPagerX viewPager,
+                              @Nullable PagerAdapter oldAdapter, @Nullable PagerAdapter newAdapter);
     }
 
     /**
@@ -387,12 +391,12 @@ public class ViewPager extends ViewGroup {
     public @interface DecorView {
     }
 
-    public ViewPager(@NonNull Context context) {
+    public ViewPagerX(@NonNull Context context) {
         super(context);
         initViewPager();
     }
 
-    public ViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public ViewPagerX(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initViewPager();
     }
@@ -430,7 +434,7 @@ public class ViewPager extends ViewGroup {
 
                     @Override
                     public WindowInsetsCompat onApplyWindowInsets(final View v,
-                            final WindowInsetsCompat originalInsets) {
+                                                                  final WindowInsetsCompat originalInsets) {
                         // First let the ViewPager itself try and consume them...
                         final WindowInsetsCompat applied =
                                 ViewCompat.onApplyWindowInsets(v, originalInsets);
@@ -504,7 +508,8 @@ public class ViewPager extends ViewGroup {
      */
     public void setAdapter(@Nullable PagerAdapter adapter) {
         if (mAdapter != null) {
-            mAdapter.setViewPagerObserver(null);
+            /* 修改2
+            mAdapter.setViewPagerObserver(null);*/
             mAdapter.startUpdate(this);
             for (int i = 0; i < mItems.size(); i++) {
                 final ItemInfo ii = mItems.get(i);
@@ -525,7 +530,8 @@ public class ViewPager extends ViewGroup {
             if (mObserver == null) {
                 mObserver = new PagerObserver();
             }
-            mAdapter.setViewPagerObserver(mObserver);
+            /* 修改3
+            mAdapter.setViewPagerObserver(mObserver);*/
             mPopulatePending = false;
             final boolean wasFirstLayout = mFirstLayout;
             mFirstLayout = true;
@@ -615,7 +621,7 @@ public class ViewPager extends ViewGroup {
     /**
      * Set the currently selected page.
      *
-     * @param item Item index to select
+     * @param item         Item index to select
      * @param smoothScroll True to smoothly scroll to the new item, false to transition immediately
      */
     public void setCurrentItem(int item, boolean smoothScroll) {
@@ -672,7 +678,7 @@ public class ViewPager extends ViewGroup {
     }
 
     private void scrollToItem(int item, boolean smoothScroll, int velocity,
-            boolean dispatchSelected) {
+                              boolean dispatchSelected) {
         final ItemInfo curInfo = infoForPosition(item);
         int destX = 0;
         if (curInfo != null) {
@@ -700,7 +706,6 @@ public class ViewPager extends ViewGroup {
      * scrolled. See {@link OnPageChangeListener}.
      *
      * @param listener Listener to set
-     *
      * @deprecated Use {@link #addOnPageChangeListener(OnPageChangeListener)}
      * and {@link #removeOnPageChangeListener(OnPageChangeListener)} instead.
      */
@@ -757,15 +762,15 @@ public class ViewPager extends ViewGroup {
      * but it will cause issues if any of your pages contain a {@link android.view.SurfaceView}
      * and you have not called {@link android.view.SurfaceView#setZOrderOnTop(boolean)} to put that
      * {@link android.view.SurfaceView} above your app content. To disable this behavior, call
-     * {@link #setPageTransformer(boolean,PageTransformer,int)} and pass
+     * {@link #setPageTransformer(boolean, PageTransformer, int)} and pass
      * {@link View#LAYER_TYPE_NONE} for {@code pageLayerType}.</p>
      *
      * @param reverseDrawingOrder true if the supplied PageTransformer requires page views
      *                            to be drawn from last to first instead of first to last.
-     * @param transformer PageTransformer that will modify each page's animation properties
+     * @param transformer         PageTransformer that will modify each page's animation properties
      */
     public void setPageTransformer(boolean reverseDrawingOrder,
-            @Nullable PageTransformer transformer) {
+                                   @Nullable PageTransformer transformer) {
         setPageTransformer(reverseDrawingOrder, transformer, View.LAYER_TYPE_HARDWARE);
     }
 
@@ -776,14 +781,14 @@ public class ViewPager extends ViewGroup {
      *
      * @param reverseDrawingOrder true if the supplied PageTransformer requires page views
      *                            to be drawn from last to first instead of first to last.
-     * @param transformer PageTransformer that will modify each page's animation properties
-     * @param pageLayerType View layer type that should be used for ViewPager pages. It should be
-     *                      either {@link View#LAYER_TYPE_HARDWARE},
-     *                      {@link View#LAYER_TYPE_SOFTWARE}, or
-     *                      {@link View#LAYER_TYPE_NONE}.
+     * @param transformer         PageTransformer that will modify each page's animation properties
+     * @param pageLayerType       View layer type that should be used for ViewPager pages. It should be
+     *                            either {@link View#LAYER_TYPE_HARDWARE},
+     *                            {@link View#LAYER_TYPE_SOFTWARE}, or
+     *                            {@link View#LAYER_TYPE_NONE}.
      */
     public void setPageTransformer(boolean reverseDrawingOrder,
-            @Nullable PageTransformer transformer, int pageLayerType) {
+                                   @Nullable PageTransformer transformer, int pageLayerType) {
         final boolean hasTransformer = transformer != null;
         final boolean needsPopulate = hasTransformer != (mPageTransformer != null);
         mPageTransformer = transformer;
@@ -942,8 +947,8 @@ public class ViewPager extends ViewGroup {
     /**
      * Like {@link View#scrollBy}, but scroll smoothly instead of immediately.
      *
-     * @param x the number of pixels to scroll by on the X axis
-     * @param y the number of pixels to scroll by on the Y axis
+     * @param x        the number of pixels to scroll by on the X axis
+     * @param y        the number of pixels to scroll by on the Y axis
      * @param velocity the velocity associated with a fling, if applicable. (0 otherwise)
      */
     void smoothScrollTo(int x, int y, int velocity) {
@@ -1128,6 +1133,8 @@ public class ViewPager extends ViewGroup {
         final int N = mAdapter.getCount();
         final int endPos = Math.min(N - 1, mCurItem + pageLimit);
 
+        Log.i("ViewPagerX", "startPos = " + startPos + " endPos = " + endPos);
+
         if (N != mExpectedAdapterCount) {
             String resName;
             try {
@@ -1307,7 +1314,7 @@ public class ViewPager extends ViewGroup {
                 ItemInfo ii = null;
                 float offset = oldCurInfo.offset + oldCurInfo.widthFactor + marginOffset;
                 for (int pos = oldCurPosition + 1;
-                        pos <= curItem.position && itemIndex < mItems.size(); pos++) {
+                     pos <= curItem.position && itemIndex < mItems.size(); pos++) {
                     ii = mItems.get(itemIndex);
                     while (pos > ii.position && itemIndex < mItems.size() - 1) {
                         itemIndex++;
@@ -1327,7 +1334,7 @@ public class ViewPager extends ViewGroup {
                 ItemInfo ii = null;
                 float offset = oldCurInfo.offset;
                 for (int pos = oldCurPosition - 1;
-                        pos >= curItem.position && itemIndex >= 0; pos--) {
+                     pos >= curItem.position && itemIndex >= 0; pos--) {
                     ii = mItems.get(itemIndex);
                     while (pos < ii.position && itemIndex > 0) {
                         itemIndex--;
@@ -1419,6 +1426,7 @@ public class ViewPager extends ViewGroup {
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in, null);
             }
+
             @Override
             public SavedState[] newArray(int size) {
                 return new SavedState[size];
@@ -1854,9 +1862,9 @@ public class ViewPager extends ViewGroup {
      * (e.g. super.onPageScrolled(position, offset, offsetPixels)) before onPageScrolled
      * returns.
      *
-     * @param position Position index of the first page currently being displayed.
-     *                 Page position+1 will be visible if positionOffset is nonzero.
-     * @param offset Value from [0, 1) indicating the offset from the page at position.
+     * @param position     Position index of the first page currently being displayed.
+     *                     Page position+1 will be visible if positionOffset is nonzero.
+     * @param offset       Value from [0, 1) indicating the offset from the page at position.
      * @param offsetPixels Value in pixels indicating the offset from position.
      */
     @CallSuper
@@ -2059,9 +2067,9 @@ public class ViewPager extends ViewGroup {
                  */
 
                 /*
-                * Locally do absolute value. mLastMotionY is set to the y value
-                * of the down event.
-                */
+                 * Locally do absolute value. mLastMotionY is set to the y value
+                 * of the down event.
+                 */
                 final int activePointerId = mActivePointerId;
                 if (activePointerId == INVALID_POINTER) {
                     // If we don't have a valid id, the touch down wasn't on content.
@@ -2357,7 +2365,7 @@ public class ViewPager extends ViewGroup {
 
     /**
      * @return Info about the page at the current scroll position.
-     *         This can be synthetic for a missing middle page; the 'object' field can be null.
+     * This can be synthetic for a missing middle page; the 'object' field can be null.
      */
     private ItemInfo infoForCurrentScrollPosition() {
         final int width = getClientWidth();
@@ -2429,7 +2437,7 @@ public class ViewPager extends ViewGroup {
         final int overScrollMode = getOverScrollMode();
         if (overScrollMode == View.OVER_SCROLL_ALWAYS
                 || (overScrollMode == View.OVER_SCROLL_IF_CONTENT_SCROLLS
-                        && mAdapter != null && mAdapter.getCount() > 1)) {
+                && mAdapter != null && mAdapter.getCount() > 1)) {
             if (!mLeftEdge.isFinished()) {
                 final int restoreCount = canvas.save();
                 final int height = getHeight() - getPaddingTop() - getPaddingBottom();
@@ -2520,7 +2528,6 @@ public class ViewPager extends ViewGroup {
      * is already in progress, this method will return false.
      *
      * @return true if the fake drag began successfully, false if it could not be started.
-     *
      * @see #fakeDragBy(float)
      * @see #endFakeDrag()
      */
@@ -2631,7 +2638,6 @@ public class ViewPager extends ViewGroup {
      * Returns true if a fake drag is in progress.
      *
      * @return true if currently in a fake drag, false otherwise.
-     *
      * @see #beginFakeDrag()
      * @see #fakeDragBy(float)
      * @see #endFakeDrag()
@@ -2685,7 +2691,7 @@ public class ViewPager extends ViewGroup {
      *
      * @param direction Negative to check scrolling left, positive to check scrolling right.
      * @return Whether this ViewPager can be scrolled in the specified direction. It will always
-     *         return false if the specified direction is 0.
+     * return false if the specified direction is 0.
      */
     @Override
     public boolean canScrollHorizontally(int direction) {
@@ -2707,12 +2713,12 @@ public class ViewPager extends ViewGroup {
     /**
      * Tests scrollability within child views of v given a delta of dx.
      *
-     * @param v View to test for horizontal scrollability
+     * @param v      View to test for horizontal scrollability
      * @param checkV Whether the view v passed should itself be checked for scrollability (true),
      *               or just its children (false).
-     * @param dx Delta scrolled in pixels
-     * @param x X coordinate of the active touch point
-     * @param y Y coordinate of the active touch point
+     * @param dx     Delta scrolled in pixels
+     * @param x      X coordinate of the active touch point
+     * @param y      Y coordinate of the active touch point
      * @return true if child views of v can be scrolled by delta of dx.
      */
     protected boolean canScroll(View v, boolean checkV, int dx, int x, int y) {
@@ -2729,7 +2735,7 @@ public class ViewPager extends ViewGroup {
                 if (x + scrollX >= child.getLeft() && x + scrollX < child.getRight()
                         && y + scrollY >= child.getTop() && y + scrollY < child.getBottom()
                         && canScroll(child, true, dx, x + scrollX - child.getLeft(),
-                                y + scrollY - child.getTop())) {
+                        y + scrollY - child.getTop())) {
                     return true;
                 }
             }
@@ -2796,7 +2802,7 @@ public class ViewPager extends ViewGroup {
         } else if (currentFocused != null) {
             boolean isChild = false;
             for (ViewParent parent = currentFocused.getParent(); parent instanceof ViewGroup;
-                    parent = parent.getParent()) {
+                 parent = parent.getParent()) {
                 if (parent == this) {
                     isChild = true;
                     break;
@@ -2807,7 +2813,7 @@ public class ViewPager extends ViewGroup {
                 final StringBuilder sb = new StringBuilder();
                 sb.append(currentFocused.getClass().getSimpleName());
                 for (ViewParent parent = currentFocused.getParent(); parent instanceof ViewGroup;
-                        parent = parent.getParent()) {
+                     parent = parent.getParent()) {
                     sb.append(" => ").append(parent.getClass().getSimpleName());
                 }
                 Log.e(TAG, "arrowScroll tried to find focus based on non-child "
@@ -2963,7 +2969,7 @@ public class ViewPager extends ViewGroup {
      */
     @Override
     protected boolean onRequestFocusInDescendants(int direction,
-            Rect previouslyFocusedRect) {
+                                                  Rect previouslyFocusedRect) {
         int index;
         int increment;
         int end;
@@ -3039,7 +3045,7 @@ public class ViewPager extends ViewGroup {
         @Override
         public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             super.onInitializeAccessibilityEvent(host, event);
-            event.setClassName(ViewPager.class.getName());
+            event.setClassName(ViewPagerX.class.getName());
             event.setScrollable(canScroll());
             if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED && mAdapter != null) {
                 event.setItemCount(mAdapter.getCount());
@@ -3051,7 +3057,7 @@ public class ViewPager extends ViewGroup {
         @Override
         public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            info.setClassName(ViewPager.class.getName());
+            info.setClassName(ViewPagerX.class.getName());
             info.setScrollable(canScroll());
             if (canScrollHorizontally(1)) {
                 info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD);
@@ -3072,13 +3078,15 @@ public class ViewPager extends ViewGroup {
                         setCurrentItem(mCurItem + 1);
                         return true;
                     }
-                } return false;
+                }
+                return false;
                 case AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD: {
                     if (canScrollHorizontally(-1)) {
                         setCurrentItem(mCurItem - 1);
                         return true;
                     }
-                } return false;
+                }
+                return false;
             }
             return false;
         }
@@ -3096,6 +3104,7 @@ public class ViewPager extends ViewGroup {
         public void onChanged() {
             dataSetChanged();
         }
+
         @Override
         public void onInvalidated() {
             dataSetChanged();
@@ -3123,23 +3132,23 @@ public class ViewPager extends ViewGroup {
         /**
          * Width as a 0-1 multiplier of the measured pager width
          */
-        float widthFactor = 0.f;
+        public float widthFactor = 0.f;
 
         /**
          * true if this view was added during layout and needs to be measured
          * before being positioned.
          */
-        boolean needsMeasure;
+        public boolean needsMeasure;
 
         /**
          * Adapter position this view is for if !isDecor
          */
-        int position;
+        public int position;
 
         /**
          * Current child index within the ViewPager that this view occupies
          */
-        int childIndex;
+        public int childIndex;
 
         public LayoutParams() {
             super(MATCH_PARENT, MATCH_PARENT);
@@ -3165,4 +3174,5 @@ public class ViewPager extends ViewGroup {
             return llp.position - rlp.position;
         }
     }
+
 }
