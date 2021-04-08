@@ -10,6 +10,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.geekince.widget.viewpagerx.bottomsheet.ViewPagerBottomSheetDialog;
 import com.geekince.widget.viewpagerx.bottomsheet.ViewPagerBottomSheetDialogFragment;
+import com.geekince.widget.viewpagerx.dynamic.WrappingViewPager;
 
 import java.util.ArrayList;
 
@@ -38,7 +39,7 @@ public class BottomPagerSheetDialog extends ViewPagerBottomSheetDialogFragment {
     @Override
     protected void initView() {
         super.initView();
-        ViewPager viewPager = mRootView.findViewById(R.id.view_pager_x);
+        WrappingViewPager viewPager = mRootView.findViewById(R.id.view_pager_x);
         ArrayList<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(BottomListFragment.newInstance(6));
         fragmentList.add(BottomListFragment.newInstance(20));

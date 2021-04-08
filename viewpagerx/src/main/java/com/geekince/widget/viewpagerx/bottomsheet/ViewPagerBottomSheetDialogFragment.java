@@ -13,10 +13,10 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
 
 import com.geekince.widget.viewpagerx.R;
 
+import com.geekince.widget.viewpagerx.dynamic.WrappingViewPager;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 /**
@@ -83,11 +83,11 @@ public abstract class ViewPagerBottomSheetDialogFragment extends BottomSheetDial
     }
 
     /**
-     * viewpager页面改变了调用 解决不能刷新Fagment页面 造成Recyclerview不能滑动的bug。
+     * viewpager页面改变了调用 解决不能刷新Fragment页面 造成Recyclerview不能滑动的bug。
      *
      * @param viewPager
      */
-    public void onPageChange(ViewPager viewPager) {
+    public void onPageChange(WrappingViewPager viewPager) {
         if (viewPager != null && behavior != null) {
             viewPager.post(new Runnable() {
                 @Override

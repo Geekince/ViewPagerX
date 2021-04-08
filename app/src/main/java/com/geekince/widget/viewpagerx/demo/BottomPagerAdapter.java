@@ -5,11 +5,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+
+import com.geekince.widget.viewpagerx.dynamic.WrappingFragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 
-public class BottomPagerAdapter extends FragmentStatePagerAdapter {
+public class BottomPagerAdapter extends WrappingFragmentStatePagerAdapter {
 
     private ArrayList<Fragment> mFragmentList;
 

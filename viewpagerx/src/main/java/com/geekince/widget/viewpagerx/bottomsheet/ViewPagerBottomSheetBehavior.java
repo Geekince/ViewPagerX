@@ -37,9 +37,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 import androidx.customview.view.AbsSavedState;
 import androidx.customview.widget.ViewDragHelper;
-import androidx.viewpager.widget.ViewPager;
 
 import com.geekince.widget.viewpagerx.R;
+import com.geekince.widget.viewpagerx.dynamic.WrappingViewPager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -612,8 +612,8 @@ public class ViewPagerBottomSheetBehavior<V extends View> extends CoordinatorLay
         if (ViewCompat.isNestedScrollingEnabled(view)) {
             return view;
         }
-        if (view instanceof ViewPager) {
-            ViewPager viewPager = (ViewPager) view;
+        if (view instanceof WrappingViewPager) {
+            WrappingViewPager viewPager = (WrappingViewPager) view;
             View currentViewPagerChild = viewPager.getChildAt(viewPager.getCurrentItem());
             if (currentViewPagerChild == null) {
                 return null;

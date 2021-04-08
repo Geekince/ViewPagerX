@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bottom_dialog_bg">
 
-    <androidx.viewpager.widget.ViewPager
+    <com.geekince.widget.viewpagerx.dynamic.WrappingViewPager
         android:id="@+id/view_pager_x"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
