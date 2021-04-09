@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
  */
 public abstract class WrappingFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
     private int mCurrentPosition = -1;
+    private int mPadding;
 
     public WrappingFragmentStatePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -41,7 +42,12 @@ public abstract class WrappingFragmentStatePagerAdapter extends FragmentStatePag
             if (position != mCurrentPosition) {
                 mCurrentPosition = position;
             }
-            pager.onPageChanged(fragment.getView(), position);
+            pager.onPageChanged(fragment.getView(), mPadding);
         }
     }
+
+    public void setPadding(int padding) {
+        this.mPadding = padding;
+    }
+
 }

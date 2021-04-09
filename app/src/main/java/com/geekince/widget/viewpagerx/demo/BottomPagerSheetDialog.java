@@ -42,10 +42,21 @@ public class BottomPagerSheetDialog extends ViewPagerBottomSheetDialogFragment {
         WrappingViewPager viewPager = mRootView.findViewById(R.id.view_pager_x);
         ArrayList<Fragment> fragmentList = new ArrayList<>();
         fragmentList.add(BottomListFragment.newInstance(6));
-        fragmentList.add(BottomListFragment.newInstance(20));
+
+        BottomListFragment listFragment = BottomListFragment.newInstance(20);
+        fragmentList.add(listFragment);
+
         BottomPagerAdapter bottomPagerAdapter = new BottomPagerAdapter(
                 getChildFragmentManager(),
                 fragmentList);
+
+        listFragment.setOnGlobalLayoutListener(new BottomListFragment.OnGlobalLayoutListener() {
+            @Override
+            public void returnPadding(int padding) {
+                bottomPagerAdapter.setPadding(padding);
+            }
+        });
+
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(bottomPagerAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

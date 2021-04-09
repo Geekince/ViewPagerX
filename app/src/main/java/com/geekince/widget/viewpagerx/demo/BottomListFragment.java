@@ -1,10 +1,10 @@
 package com.geekince.widget.viewpagerx.demo;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class BottomListFragment extends Fragment {
+
+    private OnGlobalLayoutListener mOnGlobalLayoutListener;
 
     public static BottomListFragment newInstance(int count) {
         BottomListFragment fragment = new BottomListFragment();
@@ -37,11 +39,36 @@ public class BottomListFragment extends Fragment {
             count = bundle.getInt("count");
         }
 
-        Log.i("ViewPagerX", "onViewCreated");
+        View holderView = view.findViewById(R.id.holder);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(new BottomListAdapter(count));
+
+        if (count > 6) {
+            holderView.setVisibility(View.VISIBLE);
+            holderView.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                        @Override
+                        public void onGlobalLayout() {
+                            holderView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            recyclerView.setPadding(0, holderView.getHeight(), 0, 0);
+                            if (mOnGlobalLayoutListener != null) {
+                                mOnGlobalLayoutListener.returnPadding(holderView.getHeight());
+                            }
+                        }
+                    });
+        }
+    }
+
+    public void setOnGlobalLayoutListener(OnGlobalLayoutListener listener) {
+        this.mOnGlobalLayoutListener = listener;
+    }
+
+    public interface OnGlobalLayoutListener {
+        void returnPadding(int padding);
     }
 
 }
