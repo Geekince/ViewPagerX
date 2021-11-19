@@ -42,7 +42,7 @@ public abstract class WrappingFragmentPagerAdapter extends FragmentPagerAdapter 
             if (position != mCurrentPosition) {
                 mCurrentPosition = position;
             }
-            pager.onPageChanged(fragment.getView(), position);
+            pager.onPageChanged(fragment.getView());
         }
     }
 }

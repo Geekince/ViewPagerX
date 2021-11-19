@@ -3,6 +3,7 @@ package com.geekince.widget.viewpagerx.demo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ public class BottomListAdapter extends RecyclerView.Adapter<BottomListAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.textView.setText("" + position);
     }
 
     @Override
@@ -32,9 +34,11 @@ public class BottomListAdapter extends RecyclerView.Adapter<BottomListAdapter.Vi
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView textView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            textView = itemView.findViewById(R.id.text_tv);
         }
     }
 

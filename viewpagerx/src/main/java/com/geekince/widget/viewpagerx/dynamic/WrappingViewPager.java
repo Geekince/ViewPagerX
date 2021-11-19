@@ -29,7 +29,6 @@ import com.geekince.widget.viewpagerx.ScreenUtils;
  */
 public class WrappingViewPager extends ViewPager implements Animation.AnimationListener {
     private View mCurrentView;
-    private int mPadding;
     private Context mContext;
 
     private PagerAnimation mAnimation = new PagerAnimation();
@@ -58,7 +57,7 @@ public class WrappingViewPager extends ViewPager implements Animation.AnimationL
             height = mCurrentView.getMeasuredHeight();
 
             if (height >= ScreenUtils.getScreenHeight(mContext)) {
-                height = ScreenUtils.getScreenHeight(mContext) - mPadding;
+                height = ScreenUtils.getScreenHeight(mContext);
             }
 
             if (height < getMinimumHeight()) {
@@ -85,9 +84,8 @@ public class WrappingViewPager extends ViewPager implements Animation.AnimationL
      *
      * @param currentView PagerAdapter item view
      */
-    public void onPageChanged(View currentView, int padding) {
+    public void onPageChanged(View currentView) {
         mCurrentView = currentView;
-        mPadding = padding;
         requestLayout();
     }
 

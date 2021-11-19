@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class BottomListFragment extends Fragment {
 
-    private OnGlobalLayoutListener mOnGlobalLayoutListener;
-
     public static BottomListFragment newInstance(int count) {
         BottomListFragment fragment = new BottomListFragment();
         Bundle bundle = new Bundle();
@@ -53,22 +51,10 @@ public class BottomListFragment extends Fragment {
                         @Override
                         public void onGlobalLayout() {
                             holderView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
                             recyclerView.setPadding(0, holderView.getHeight(), 0, 0);
-                            if (mOnGlobalLayoutListener != null) {
-                                mOnGlobalLayoutListener.returnPadding(holderView.getHeight());
-                            }
                         }
                     });
         }
-    }
-
-    public void setOnGlobalLayoutListener(OnGlobalLayoutListener listener) {
-        this.mOnGlobalLayoutListener = listener;
-    }
-
-    public interface OnGlobalLayoutListener {
-        void returnPadding(int padding);
     }
 
 }
